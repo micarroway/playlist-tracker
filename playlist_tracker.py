@@ -4,24 +4,21 @@ Created on Thu Jun 22 09:01:41 2017
 
 @author: JCatoe
 """
-import spotipy
-import spotipy.util as util
+import json
 from operator import itemgetter
 
-PORT_NUMBER = 8080
-SPOTIPY_CLIENT_ID = '4243669c01eb4b138042f871b5b29dca'
-SPOTIPY_CLIENT_SECRET = '2758ef2017a9433f9c078a5af1be981e'
-SPOTIPY_REDIRECT_URI = 'http://localhost:8080'
+import spotipy
+import spotipy.util as util
 
-username = 'cptyaimie'
-token = util.prompt_for_user_token(username,
-                                   scope='playlist-read-collaborative',
-                                   client_id=SPOTIPY_CLIENT_ID,
-                                   client_secret=SPOTIPY_CLIENT_SECRET,
-                                   redirect_uri=SPOTIPY_REDIRECT_URI)
 
+with open('spotify_config.json') as login:
+    auth_details = json.load(login)['spotify']
+
+token = util.prompt_for_user_token(**auth_details)
 sp = spotipy.Spotify(auth=token)
 
+
+# could take the trouble to create and update this in real time...
 USERS = {'1277120721': {'person': 'Jaki',
                         'popularity': [],
                         'song_count': 0,
@@ -45,14 +42,17 @@ USERS = {'1277120721': {'person': 'Jaki',
          'phillipu': {'person': 'Phillip',
                       'popularity': [],
                       'song_count': 0,
-                      'total_time': 0}
+                      'total_time': 0},
+         'platypusmaximus': {'person': 'Justin',
+                             'popularity': [],
+                             'song_count': 0,
+                             'total_time': 0}
          }
 
 USERS_LIST = list(USERS.keys())
 UNIQUE_IDS = []
 AVG_POP = []
 SONGS = []
-TOTAL_PEOPLE = len(USERS_LIST)
 
 
 def ms_to_min(ms):
@@ -69,13 +69,12 @@ def is_new_id(test):
 
 
 def get_data(tracks):
-    print(tracks)
     for i, item in enumerate(tracks['items']):
         _added_by = item['added_by']['id']
         if is_new_id(_added_by):
             UNIQUE_IDS.append(_added_by)
         SONGS.append(item['track'])
-        # update dictionary
+        # updates dictionary
         _pop = item['track']['popularity']
         USERS[_added_by]['song_count'] += 1
         USERS[_added_by]['total_time'] += item['track']['duration_ms']
@@ -123,27 +122,27 @@ def average_popularity():
 
 
 def is_time_over(total_time, data):
-    _limit = round(720 - total_time)
-    _per_person_limit = 720 / 6
+    _allowed_minutes = 1440
+    _limit = round(_allowed_minutes - total_time)
+    _per_person_limit = _allowed_minutes / 7
 
-    if total_time > 720:
+    if total_time > _allowed_minutes:
         print('The total time is over the limit by %s mins.' % (_limit*-1))
-    elif total_time == 720:
+    elif total_time == _allowed_minutes:
         print('Good job, guys.')
     else:
         print('The total time is under the limit by %s mins.' % _limit)
-
 
     for person in data:
         _personal_time = float(person[2])
         if _personal_time > _per_person_limit:
             _overage = str(round(_personal_time - _per_person_limit))
-            print(' %s is over the limit by %s mins.' % (person[0].rjust(8),
-                                                        _overage))
+            print('      %s is over the limit by %s mins.' % (person[0].rjust(8),
+                                                              _overage))
         if _personal_time < _per_person_limit:
             _under = str(round(_personal_time - _per_person_limit)*-1)
-            print(' %s is under the limit by %s mins.' % (person[0].rjust(8),
-                                                          _under))
+            print('      %s is under the limit by %s mins.' % (person[0].rjust(8),
+                                                               _under))
 
 
 def pprint(data):
@@ -160,11 +159,13 @@ def pprint(data):
                                                         str(average_popularity()).rjust(5)))
         print()
         is_time_over(total_mins(), data)
+    else:
+        print('Missing Justin')
 
 
 if __name__ == '__main__':
     total = 0
-    all_playlists = sp.user_playlists(username)
+    all_playlists = sp.user_playlists(auth_details['username'])
     chicago = all_playlists['items'][0]
     owner = chicago['owner']['id']
     results = sp.user_playlist(owner,
@@ -182,6 +183,6 @@ if __name__ == '__main__':
                'popularity': 3}
 
     data = sorted(collect_clean_data(),
-                  key=itemgetter(sort_by['popularity']),
+                  key=itemgetter(sort_by['songs']),
                   reverse=True)
     pprint(data)
