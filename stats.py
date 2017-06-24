@@ -96,18 +96,6 @@ def collect_clean_data():
     return(data)
 
 
-def song_counts_match():
-    _overall_count = len(SONGS)
-    _dict_count = 0
-    for _id in UNIQUE_IDS:
-        _dict_count += USERS[_id]['song_count']
-    if _overall_count != _dict_count:
-        print('MISSING SOMEONE')
-        return(False)
-    else:
-        return(True)
-
-
 def total_mins():
     _total_time = 0
     for _id in UNIQUE_IDS:
@@ -147,20 +135,17 @@ def is_time_over(total_time, data):
 
 def pprint(data):
     print()
-    if song_counts_match():
-        for person in data:
-                print('%s: %s songs, %s mins, %s Avg Popularity' % (person[0].rjust(8),
-                                                                    person[1].rjust(3),
-                                                                    person[2].rjust(6),
-                                                                    person[3]))
-        print('--------------------------------------------------------')
-        print('%s songs, %s mins, %s Avg Popularity' % (str(len(SONGS)).rjust(13),
-                                                        str(total_mins()).rjust(3),
-                                                        str(average_popularity()).rjust(5)))
-        print()
-        is_time_over(total_mins(), data)
-    else:
-        print('Missing Justin')
+    for person in data:
+            print('%s: %s songs, %s mins, %s Avg Popularity' % (person[0].rjust(8),
+                                                                person[1].rjust(3),
+                                                                person[2].rjust(6),
+                                                                person[3]))
+    print('--------------------------------------------------------')
+    print('%s songs, %s mins, %s Avg Popularity' % (str(len(SONGS)).rjust(13),
+                                                    str(total_mins()).rjust(3),
+                                                    str(average_popularity()).rjust(5)))
+    print()
+    is_time_over(total_mins(), data)
 
 
 if __name__ == '__main__':
