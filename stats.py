@@ -11,12 +11,11 @@ import spotipy
 import spotipy.util as util
 
 
-with open('spotify_config.json') as login:
-    auth_details = json.load(login)['spotify']
+with open('spotify_config.json') as config:
+    config = json.load(config)
 
-token = util.prompt_for_user_token(**auth_details)
+token = util.prompt_for_user_token(**config['oath'])
 sp = spotipy.Spotify(auth=token)
-
 
 # could take the trouble to create and update this in real time...
 USERS = {'1277120721': {'person': 'Jaki',
@@ -150,8 +149,7 @@ def pprint(data):
 
 if __name__ == '__main__':
     total = 0
-    all_playlists = sp.user_playlists(auth_details['username'])
-    chicago = all_playlists['items'][0]
+    chicago = sp.user_playlist(config['playlist']['userID'], config['playlist']['playlistID'])
     owner = chicago['owner']['id']
     results = sp.user_playlist(owner,
                                chicago['id'],
