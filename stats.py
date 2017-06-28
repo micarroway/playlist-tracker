@@ -10,6 +10,8 @@ from operator import itemgetter
 import spotipy
 import spotipy.util as util
 
+from User import User
+
 
 with open('spotify_config.json') as config:
     config = json.load(config)
@@ -17,63 +19,15 @@ with open('spotify_config.json') as config:
 token = util.prompt_for_user_token(**config['oath'])
 sp = spotipy.Spotify(auth=token)
 
-# JUROBN You need a User class to represent each person. I would also suggest a Users class to hold them all.
-# JUROBN Good use of dict for quick lookup. Do you know how dict/hashmaps work under the hood?
-# JUROBN The names are fine in this small scope but in real code you don't to hard code names like this. I would see if could programatically pull them in, if not just show the username
-# could take the trouble to create and update this in real time...
-USERS = {'1277120721': {'person': 'Jaki',
-                        'popularity': [],
-                        'song_count': 0,
-                        'total_time': 0},
-         'cptyaimie': {'person': 'Jaimie',
-                       'popularity': [],
-                       'song_count': 0,
-                       'total_time': 0},
-         'taraterrrific': {'person': 'Tara',
-                           'popularity': [],
-                           'song_count': 0,
-                           'total_time': 0},
-         '1272969703': {'person': 'Nowah',
-                        'popularity': [],
-                        'song_count': 0,
-                        'total_time': 0},
-         '1236554442': {'person': 'Maritza',
-                        'popularity': [],
-                        'song_count': 0,
-                        'total_time': 0},
-         'phillipu': {'person': 'Phillip',
-                      'popularity': [],
-                      'song_count': 0,
-                      'total_time': 0},
-         'platypusmaximus': {'person': 'Justin',
-                             'popularity': [],
-                             'song_count': 0,
-                             'total_time': 0}
-         }
+USERS = {}
 
-USERS_LIST = list(USERS.keys())
 UNIQUE_IDS = []
 AVG_POP = []
 SONGS = []
 
 
 def ms_to_min(ms):
-    # JUROBN why not just one math operation? It's a small inefficiency but where do you draw the line?
-    x = ms / 1000
-    minutes = x / 60
-    return(round(minutes, 2))
-
-
-def is_new_id(test):
-    # JUROBN you can just `return test not in UNIQUE_IDS`
-    # JUROBN Is UNIQUE_IDS a dictionary or list? If it's a list this is O(n) time complexity, dictionary would reduce to O(1)
-    # JUROBN UNIQUE_IDS is an ambiguous variable name even in this narrow spotify scope.
-    #   ID of what? Track? User? Playlist? Something you created?
-    if test in UNIQUE_IDS:
-        return(False)
-    else:
-        return(True)
-
+    return(round(ms/60000, 2))
 
 # JUROBN get what data? I can't tell what this method does without looking at the code.
 #   I would suggest populate_user_stats_from_tracks since you dont actual return data
@@ -82,30 +36,34 @@ def get_data(tracks):
         # JUROBN I'm not familiar with python common practices with local variables names.
         # Do they want you to underscore them or is this just something you like?
         _added_by = item['added_by']['id']
-        if is_new_id(_added_by):
+        if _added_by not in UNIQUE_IDS:
             UNIQUE_IDS.append(_added_by)
         SONGS.append(item['track'])
         # updates dictionary
         _pop = item['track']['popularity']
-        USERS[_added_by]['song_count'] += 1
-        USERS[_added_by]['total_time'] += item['track']['duration_ms']
-        USERS[_added_by]['popularity'].append(_pop)
+        if _added_by not in USERS:
+            USERS[_added_by] = User(_added_by)
+        user = USERS[_added_by]
+        user.song_count += 1
+        user.total_time += item['track']['duration_ms']
+        user.popularity.append(_pop)
     return(total)
 
 # JUROBN define "clean" data. better method names
 def collect_clean_data():
     data = []
     for _id in UNIQUE_IDS:
-        _person = USERS[_id]['person']
-        _song_count = str(USERS[_id]['song_count'])
-        _total_time = str(ms_to_min(USERS[_id]['total_time']))
+        user = USERS[_id]
+        _person = user.display_name
+        _song_count = str(user.song_count)
+        _total_time = str(ms_to_min(user.total_time))
         # JUROBN good job not keeping a running average. However, you don't need to store all the individual popularity ratings.
         #   You just need to store the sum so far and the count so far. This will reduce time and space complexity from O(n) to O(1)
         #   it would also eliminate the need for your AVG_POP variable
-        _avg = sum(USERS[_id]['popularity']) / len(USERS[_id]['popularity'])
+        _avg = sum(user.popularity) / len(user.popularity)
         _pop = str(round(_avg, 2))
         # JUROBN why store the popularities in their own variable if you have the data already?
-        for score in USERS[_id]['popularity']:
+        for score in user.popularity:
             AVG_POP.append(score)
         data.append([_person, _song_count, _total_time, _pop])
     return(data)
@@ -114,7 +72,7 @@ def collect_clean_data():
 def total_mins():
     _total_time = 0
     for _id in UNIQUE_IDS:
-        _total_time += USERS[_id]['total_time']
+        _total_time += USERS[_id].total_time
     return(ms_to_min(_total_time))
 
 
