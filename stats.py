@@ -20,8 +20,7 @@ token = util.prompt_for_user_token(**config['oath'])
 sp = spotipy.Spotify(auth=token)
 
 USERS = {}
-
-UNIQUE_IDS = []
+UNIQUE_USER_IDS = set()
 AVG_POP = []
 SONGS = []
 
@@ -35,15 +34,15 @@ def get_data(tracks):
     for i, item in enumerate(tracks['items']):
         # JUROBN I'm not familiar with python common practices with local variables names.
         # Do they want you to underscore them or is this just something you like?
-        _added_by = item['added_by']['id']
-        if _added_by not in UNIQUE_IDS:
-            UNIQUE_IDS.append(_added_by)
+        user_id = item['added_by']['id']
+        if user_id not in UNIQUE_USER_IDS:
+            UNIQUE_USER_IDS.add(user_id)
         SONGS.append(item['track'])
         # updates dictionary
         _pop = item['track']['popularity']
-        if _added_by not in USERS:
-            USERS[_added_by] = User(_added_by)
-        user = USERS[_added_by]
+        if user_id not in USERS:
+            USERS[user_id] = User(user_id)
+        user = USERS[user_id]
         user.song_count += 1
         user.total_time += item['track']['duration_ms']
         user.popularity.append(_pop)
@@ -52,7 +51,7 @@ def get_data(tracks):
 # JUROBN define "clean" data. better method names
 def collect_clean_data():
     data = []
-    for _id in UNIQUE_IDS:
+    for _id in UNIQUE_USER_IDS:
         user = USERS[_id]
         _person = user.display_name
         _song_count = str(user.song_count)
@@ -71,7 +70,7 @@ def collect_clean_data():
 
 def total_mins():
     _total_time = 0
-    for _id in UNIQUE_IDS:
+    for _id in UNIQUE_USER_IDS:
         _total_time += USERS[_id].total_time
     return(ms_to_min(_total_time))
 
