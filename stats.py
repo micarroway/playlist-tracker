@@ -4,20 +4,11 @@ Created on Thu Jun 22 09:01:41 2017
 
 @author: JCatoe
 """
-import json
+
 from operator import itemgetter
-
-import spotipy
-import spotipy.util as util
-
 from User import User
-
-
-with open('spotify_config.json') as config:
-    config = json.load(config)
-
-token = util.prompt_for_user_token(**config['oath'])
-sp = spotipy.Spotify(auth=token)
+from SpotifyClient import SpotifyClient
+from AppConfig import AppConfig
 
 USERS = {}
 UNIQUE_USER_IDS = set()
@@ -125,7 +116,8 @@ def pprint(data):
 
 if __name__ == '__main__':
     total = 0
-    chicago = sp.user_playlist(config['playlist']['userID'], config['playlist']['playlistID'])
+    sp = SpotifyClient.get_client()
+    chicago = sp.user_playlist(AppConfig.config['playlist']['userID'], AppConfig.config['playlist']['playlistID'])
     owner = chicago['owner']['id']
     results = sp.user_playlist(owner,
                                chicago['id'],
