@@ -12,18 +12,15 @@ from SpotifyClient import SpotifyClient
 from AppConfig import AppConfig
 
 USERS = Users()
-SONGS = []
 
 # JUROBN get what data? I can't tell what this method does without looking at the code.
 #   I would suggest populate_user_stats_from_tracks since you dont actual return data
 def get_data(tracks):
     for i, item in enumerate(tracks['items']):
         user_id = item['added_by']['id']
-        SONGS.append(item['track'])
         if user_id not in USERS:
             USERS[user_id] = User(user_id)
-        user = USERS[user_id]
-        user.add_track(item['track'])
+        USERS.add_track(user_id, item['track'])
 
 # JUROBN define "clean" data. better method names
 def collect_clean_data():
@@ -72,7 +69,7 @@ def pprint(data):
                                                                 person[2].rjust(6),
                                                                 person[3]))
     print('--------------------------------------------------------')
-    print('%s songs, %s mins, %s Avg Popularity' % (str(len(SONGS)).rjust(13),
+    print('%s songs, %s mins, %s Avg Popularity' % (str(USERS.num_tracks).rjust(13),
                                                     str(USERS.get_total_minutes()).rjust(3),
                                                     str(USERS.get_average_popularity()).rjust(5)))
     print()

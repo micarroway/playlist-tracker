@@ -2,6 +2,10 @@ from User import User
 
 
 class Users(dict):
+    def __init__(self):
+        self.num_tracks = 0
+        dict.__init__(self)
+
     def __setitem__(self, key, value):
         if not isinstance(value, User):
             raise NotImplementedError
@@ -15,7 +19,7 @@ class Users(dict):
             #     return NotImplementedError
             total_minutes += user.get_total_minutes()
 
-        return total_minutes
+        return round(total_minutes, 2)
 
     def get_average_popularity(self):
         total_popularity = 0
@@ -28,3 +32,10 @@ class Users(dict):
             return 0
 
         return round(total_popularity / total_song_count, 2)
+
+    def add_track(self, user_id, track):
+        if user_id not in self:
+            raise IndexError
+
+        self.num_tracks += 1
+        self[user_id].add_track(track)
