@@ -7,10 +7,11 @@ Created on Thu Jun 22 09:01:41 2017
 
 from operator import itemgetter
 from User import User
+from Users import Users
 from SpotifyClient import SpotifyClient
 from AppConfig import AppConfig
 
-USERS = {}
+USERS = Users()
 UNIQUE_USER_IDS = set()
 AVG_POP = []
 SONGS = []
@@ -58,14 +59,6 @@ def collect_clean_data():
         data.append([_person, _song_count, _total_time, _pop])
     return(data)
 
-
-def total_mins():
-    _total_time = 0
-    for _id in UNIQUE_USER_IDS:
-        _total_time += USERS[_id].total_time
-    return(ms_to_min(_total_time))
-
-
 def average_popularity():
     _avg = sum(AVG_POP) / len(AVG_POP)
     pop = str(round(_avg, 2))
@@ -108,10 +101,10 @@ def pprint(data):
                                                                 person[3]))
     print('--------------------------------------------------------')
     print('%s songs, %s mins, %s Avg Popularity' % (str(len(SONGS)).rjust(13),
-                                                    str(total_mins()).rjust(3),
+                                                    str(USERS.get_total_minutes()).rjust(3),
                                                     str(average_popularity()).rjust(5)))
     print()
-    is_time_over(total_mins(), data)
+    is_time_over(USERS.get_total_minutes(), data)
 
 
 if __name__ == '__main__':
@@ -137,4 +130,5 @@ if __name__ == '__main__':
     data = sorted(collect_clean_data(),
                   key=itemgetter(sort_by['songs']),
                   reverse=True)
+
     pprint(data)
