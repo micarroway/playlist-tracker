@@ -12,8 +12,6 @@ from SpotifyClient import SpotifyClient
 from AppConfig import AppConfig
 
 USERS = Users()
-UNIQUE_USER_IDS = set()
-AVG_POP = []
 SONGS = []
 
 # JUROBN get what data? I can't tell what this method does without looking at the code.
@@ -21,8 +19,6 @@ SONGS = []
 def get_data(tracks):
     for i, item in enumerate(tracks['items']):
         user_id = item['added_by']['id']
-        if user_id not in UNIQUE_USER_IDS:
-            UNIQUE_USER_IDS.add(user_id)
         SONGS.append(item['track'])
         if user_id not in USERS:
             USERS[user_id] = User(user_id)
@@ -32,8 +28,7 @@ def get_data(tracks):
 # JUROBN define "clean" data. better method names
 def collect_clean_data():
     data = []
-    for _id in UNIQUE_USER_IDS:
-        user = USERS[_id]
+    for user in USERS.values():
         data.append([
             user.display_name,
             str(user.song_count),
