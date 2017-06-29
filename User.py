@@ -15,17 +15,26 @@ class User:
         self.username = username
         self.popularity = 0
         self.song_count = 0
-        self.total_time = 0
+        self.total_seconds = 0
         self._spotify_profile = self.sp.user(self.username)
         self.display_name = self._spotify_profile['display_name'] or self._spotify_profile['id']
 
+    def __repr__(self):
+        return repr((self.display_name, self.song_count, self.total_seconds, self.get_average_popularity()))
+
+    def __str__(self):
+        return '%s: %s songs, %s mins, %s Avg Popularity' % (self.display_name,
+                                                             self.song_count,
+                                                             self.get_total_minutes(),
+                                                             round(self.get_average_popularity(), 2))
+
     def get_total_minutes(self):
-        return round(self.total_time/60000, 2)
+        return round(self.total_seconds / 60000, 2)
 
     def add_track(self, track):
         self.popularity += track['popularity']
         self.song_count += 1
-        self.total_time += track['duration_ms']
+        self.total_seconds += track['duration_ms']
 
     def get_average_popularity(self):
         return self.popularity / self.song_count

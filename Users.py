@@ -1,8 +1,11 @@
 from User import User
 
+from os import linesep
+
 
 class Users(dict):
     def __init__(self):
+        self.allowed_minutes = 0
         self.num_tracks = 0
         dict.__init__(self)
 
@@ -11,6 +14,44 @@ class Users(dict):
             raise NotImplementedError
 
         dict.__setitem__(self, key, value)
+
+    def __str__(self):
+        sorted_users = sorted(self.values(), key=lambda u: str.lower(u.display_name))
+        string_value = linesep
+        for user in sorted_users:
+            string_value += str(user) + linesep
+        string_value += '--------------------------------------------------------' + linesep
+        string_value += '%s songs, %s mins, %s Avg Popularity' % (
+            self.num_tracks,
+            self.get_total_minutes(),
+            self.get_average_popularity()
+        ) + linesep
+
+        total_minutes = self.get_total_minutes()
+        limit = round(self.allowed_minutes - self.get_total_minutes())
+        per_person_time_limit = self.allowed_minutes / len(sorted_users)
+
+        string_value += linesep
+
+        if total_minutes > self.allowed_minutes:
+            string_value += 'The total time is over the limit by %s mins.' % (limit * -1) + linesep
+        elif total_minutes == self.allowed_minutes:
+            string_value += 'Good job, guys.' + linesep
+        else:
+            string_value += 'The total time is under the limit by %s mins.' % limit + linesep
+
+        for user in sorted_users:
+            user_time = float(user.get_total_minutes())
+            if user_time > per_person_time_limit:
+                overage = str(round(user_time - per_person_time_limit))
+                string_value += '%s is over the limit by %s mins.' % (user.display_name,
+                                                                      overage) + linesep
+            if user_time < per_person_time_limit:
+                under = str(round(user_time - per_person_time_limit) * -1)
+                string_value += '%s is under the limit by %s mins.' % (user.display_name,
+                                                                       under) + linesep
+
+        return string_value + linesep
 
     def get_total_minutes(self):
         total_minutes = 0
