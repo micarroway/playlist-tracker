@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 22 09:01:41 2017
-
 @author: JCatoe
+@contributor: MMills
 """
 import json
 from operator import itemgetter
@@ -10,12 +10,17 @@ from operator import itemgetter
 import spotipy
 import spotipy.util as util
 
+import numpy as np
+import pandas as p
+import matplotlib.pyplot as plt
 
-with open('spotify_config.json') as config:
-    config = json.load(config)
 
-token = util.prompt_for_user_token(**config['oath'])
+with open('spotify_config.json') as login:
+    auth_details = json.load(login)['spotify']
+
+token = util.prompt_for_user_token(**auth_details)
 sp = spotipy.Spotify(auth=token)
+
 
 # could take the trouble to create and update this in real time...
 USERS = {'1277120721': {'person': 'Jaki',
@@ -48,11 +53,13 @@ USERS = {'1277120721': {'person': 'Jaki',
                              'total_time': 0}
          }
 
+ALLOWED_MINUTES = 1440
 USERS_LIST = list(USERS.keys())
 UNIQUE_IDS = []
 AVG_POP = []
 SONGS = []
-
+ALBUMS = []
+GENRES = []
 
 def ms_to_min(ms):
     x = ms / 1000
@@ -70,17 +77,18 @@ def is_new_id(test):
 def get_data(tracks):
     for i, item in enumerate(tracks['items']):
         _added_by = item['added_by']['id']
+        _albums = item['track']['album']['id']
         if is_new_id(_added_by):
             UNIQUE_IDS.append(_added_by)
         SONGS.append(item['track'])
+        ALBUMS.append(item['track']['album']['id']) #for when I want to get album genres later MMills
         # updates dictionary
-        _pop = item['track']['popularity']
+        _pop = item['track']['popularity']        
         USERS[_added_by]['song_count'] += 1
         USERS[_added_by]['total_time'] += item['track']['duration_ms']
-        USERS[_added_by]['popularity'].append(_pop)
+        USERS[_added_by]['popularity'].append(_pop)    
     return(total)
-
-
+    
 def collect_clean_data():
     data = []
     for _id in UNIQUE_IDS:
@@ -93,8 +101,7 @@ def collect_clean_data():
             AVG_POP.append(score)
         data.append([_person, _song_count, _total_time, _pop])
     return(data)
-
-
+    
 def total_mins():
     _total_time = 0
     for _id in UNIQUE_IDS:
@@ -109,7 +116,7 @@ def average_popularity():
 
 
 def is_time_over(total_time, data):
-    _allowed_minutes = 1440
+    _allowed_minutes = ALLOWED_MINUTES
     _limit = round(_allowed_minutes - total_time)
     _per_person_limit = _allowed_minutes / 7
 
@@ -146,15 +153,18 @@ def pprint(data):
     print()
     is_time_over(total_mins(), data)
 
+#def get_genres(ALBUMS): work in progress MMills
+    
 
 if __name__ == '__main__':
     total = 0
-    chicago = sp.user_playlist(config['playlist']['userID'], config['playlist']['playlistID'])
+    all_playlists = sp.user_playlists(auth_details['username'])
+    chicago = all_playlists['items'][0]
     owner = chicago['owner']['id']
     results = sp.user_playlist(owner,
                                chicago['id'],
                                fields='tracks,next')
-    tracks = results['tracks']
+    tracks = results['tracks']                            
     get_data(tracks)
     while tracks['next']:
         tracks = sp.next(tracks)
@@ -168,4 +178,35 @@ if __name__ == '__main__':
     data = sorted(collect_clean_data(),
                   key=itemgetter(sort_by['songs']),
                   reverse=True)
+
+#Visualization MMills
+    n_users = len(data)
+    fig, chart = plt.subplots()
+    index = np.arange(n_users)
+    bar_width = 0.5
+    opacity = .35
+
+    users_name = []
+    users_time = []#total time in min for each users' song additions
+    time_allowed = []
+
+    for _id in UNIQUE_IDS:
+        users_name.append(USERS[_id]['person'])
+        
+    for _id in UNIQUE_IDS:
+        users_time.append(ms_to_min(USERS[_id]['total_time']))       
+        time_allowed.append(ALLOWED_MINUTES/7 - ms_to_min(USERS[_id]['total_time']))
+        
+    bars1 = plt.bar(index, users_time,bar_width, alpha = opacity, color = 'g')
+
+    bars2 = plt.bar(index, time_allowed, bar_width, alpha = opacity, color = 'k',
+             bottom=users_time)
+    
+    plt.xlabel('Users')
+    plt.ylabel('Time(minutes)')
+    plt.title('Chicago Playlist: Total Time by User')        
+    plt.tight_layout()
+    plt.xticks(index,users_name)    
+#Visualization end    
     pprint(data)
+    plt.show()
