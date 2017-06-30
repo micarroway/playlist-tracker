@@ -32,4 +32,6 @@ class User:
         self.total_seconds += track['duration_ms']
 
     def get_average_popularity(self):
+        if not self.song_count:
+            return 0
         return self.popularity / self.song_count
