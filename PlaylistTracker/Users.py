@@ -5,10 +5,6 @@ from PlaylistTracker.User import User
 
 class Users(dict):
     __slots__ = ['allowed_minutes', 'num_tracks']
-    
-    def __init__(self, **kwargs):
-        self.allowed_minutes = kwargs['allowed_minutes'] if 'allowed_minutes' in kwargs.keys() else 0
-        self.num_tracks = 0        
 
     def __init__(self, **kwargs):
         self.allowed_minutes = kwargs['allowed_minutes'] if 'allowed_minutes' in kwargs.keys() else 0
@@ -59,7 +55,7 @@ class Users(dict):
                                                                     'under'.rjust(5),
                                                                     remainder.rjust(3)) + linesep
             if user_time == per_person_time_limit:
-                string_value +=  '%s is at the limit.' % (user.display_name.rjust(20))
+                string_value += '%s is at the limit.' % (user.display_name.rjust(20))
 
         return string_value + linesep
 
