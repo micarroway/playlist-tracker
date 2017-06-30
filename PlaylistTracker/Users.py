@@ -1,6 +1,6 @@
-from User import User
-
 from os import linesep
+
+from PlaylistTracker.User import User
 
 
 class Users(dict):
@@ -21,14 +21,14 @@ class Users(dict):
         for user in sorted_users:
             string_value += str(user) + linesep
         string_value += '--------------------------------------------------------' + linesep
+        total_minutes = self.get_total_minutes()
         string_value += '%s songs, %s mins, %s Avg Popularity' % (
             self.num_tracks,
-            self.get_total_minutes(),
-            self.get_average_popularity()
+            round(total_minutes, 2),
+            round(self.get_average_popularity(), 2)
         ) + linesep
 
-        total_minutes = self.get_total_minutes()
-        limit = round(self.allowed_minutes - self.get_total_minutes())
+        limit = round(self.allowed_minutes - total_minutes)
         per_person_time_limit = self.allowed_minutes / len(sorted_users)
 
         string_value += linesep
@@ -54,25 +54,10 @@ class Users(dict):
         return string_value + linesep
 
     def get_total_minutes(self):
-        total_minutes = 0
-        for user in self.values():
-            # if not isinstance(x, User):
-            #     return NotImplementedError
-            total_minutes += user.get_total_minutes()
-
-        return round(total_minutes, 2)
+        return sum(user.get_total_minutes() for user in self.values())
 
     def get_average_popularity(self):
-        total_popularity = 0
-        total_song_count = 0
-        for user in self.values():
-            total_popularity += user.popularity
-            total_song_count += user.song_count
-
-        if total_song_count == 0:
-            return 0
-
-        return round(total_popularity / total_song_count, 2)
+        return sum(user.popularity for user in self.values()) / self.num_tracks
 
     def add_track(self, user_id, track):
         if user_id not in self:

@@ -25,11 +25,11 @@ class User:
     def __str__(self):
         return '%s: %s songs, %s mins, %s Avg Popularity' % (self.display_name,
                                                              self.song_count,
-                                                             self.get_total_minutes(),
+                                                             round(self.get_total_minutes(), 2),
                                                              round(self.get_average_popularity(), 2))
 
     def get_total_minutes(self):
-        return round(self.total_seconds / 60000, 2)
+        return self.total_seconds / 60000
 
     def add_track(self, track):
         self.popularity += track['popularity']

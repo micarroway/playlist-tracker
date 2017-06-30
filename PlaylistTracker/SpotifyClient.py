@@ -1,6 +1,7 @@
 import spotipy
 import spotipy.util as util
-from AppConfig import AppConfig
+
+from PlaylistTracker.AppConfig import AppConfig
 
 
 class SpotifyClient:
