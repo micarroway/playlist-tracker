@@ -14,28 +14,30 @@ USERS = Users()
 USERS.allowed_minutes = AppConfig.config['playlist']['allowed_minutes']
 
 
-# JUROBN get what data? I can't tell what this method does without looking at the code.
-#   I would suggest populate_user_stats_from_tracks since you dont actual return data
-def get_data(tracks):
-    for i, item in enumerate(tracks['items']):
-        user_id = item['added_by']['id']
+def add_tracks_to_users(tracks):
+    for track in tracks:
+        user_id = track['added_by']['id']
         if user_id not in USERS:
             USERS[user_id] = User(user_id)
-        USERS.add_track(user_id, item['track'])
+        USERS.add_track(user_id, track['track'])
 
 
 if __name__ == '__main__':
-    total = 0
+
+    # get a spotify client
     sp = SpotifyClient.get_client()
-    chicago = sp.user_playlist(AppConfig.config['playlist']['userID'], AppConfig.config['playlist']['playlistID'])
-    owner = chicago['owner']['id']
-    results = sp.user_playlist(owner,
-                               chicago['id'],
-                               fields='tracks,next')
-    tracks = results['tracks']
-    get_data(tracks)
+
+    # get the playlist
+    playlist = sp.user_playlist(AppConfig.config['playlist']['userID'],
+                                AppConfig.config['playlist']['playlistID'],
+                                fields='tracks,next')
+
+    # extract first "chunk" of tracks and all subsequent "chunks"
+    tracks = playlist['tracks']
+    add_tracks_to_users(tracks['items'])
     while tracks['next']:
         tracks = sp.next(tracks)
-        get_data(tracks)
+        add_tracks_to_users(tracks['items'])
 
+    # show results
     print(USERS)

@@ -8,6 +8,7 @@
   },
   "playlist": {
     "userID": "1277120721",
-    "playlistID": "6sV2iBPZVHkfLCcGOeUaaF"
+    "playlistID": "6sV2iBPZVHkfLCcGOeUaaF",
+    "allowed_minutes": 1440
   }
 }
