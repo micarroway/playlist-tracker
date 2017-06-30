@@ -1,0 +1,14 @@
+{
+  "oath": {
+    "username": "cptyaimie",
+    "scope": "playlist-read-collaborative",
+    "client_id": "0bbc82922b7e4b37be994623c05705f5",
+    "client_secret": "8335d6687624473489ed037bfcd64fb7",
+    "redirect_uri": "http://localhost:8888/callback"
+  },
+  "playlist": {
+    "userID": "1277120721",
+    "playlistID": "6sV2iBPZVHkfLCcGOeUaaF",
+    "allowed_minutes": 1440
+  }
+}
