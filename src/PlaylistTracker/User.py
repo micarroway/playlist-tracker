@@ -2,7 +2,7 @@ import json
 import spotipy
 import spotipy.util as util
 
-with open('spotify_config.json') as config:
+with open('app_config.json') as config:
     config = json.load(config)
 
 
