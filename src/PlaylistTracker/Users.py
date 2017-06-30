@@ -6,10 +6,13 @@ from PlaylistTracker.User import User
 class Users(dict):
     __slots__ = ['allowed_minutes', 'num_tracks']
     
-    
     def __init__(self, **kwargs):
         self.allowed_minutes = kwargs['allowed_minutes'] if 'allowed_minutes' in kwargs.keys() else 0
         self.num_tracks = 0        
+
+    def __init__(self, **kwargs):
+        self.allowed_minutes = kwargs['allowed_minutes'] if 'allowed_minutes' in kwargs.keys() else 0
+        self.num_tracks = 0
         dict.__init__(self)
 
     def __setitem__(self, key, value):

@@ -10,6 +10,7 @@ from PlaylistTracker.Users import Users
 
 from PlaylistTracker.AppConfig import AppConfig
 
+
 import numpy as np
 import pandas as p
 import matplotlib.pyplot as plt
@@ -37,6 +38,7 @@ class PlaylistTracker:
 
         # show results
         print(self.users)
+
         #Visualization MMills
         n_users = len(self.users)
         fig, chart = plt.subplots()
@@ -66,6 +68,8 @@ class PlaylistTracker:
         plt.tight_layout()
         plt.xticks(index,user_names)    
         #Visualization end    
+
+
 
     def add_tracks_to_users(self, tracks):
         for track in tracks:
