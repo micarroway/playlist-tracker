@@ -15,8 +15,7 @@ class PlaylistTracker:
     __slots__ = ['users', 'sp']
 
     def __init__(self):
-        self.users = Users()
-        self.users.allowed_minutes = AppConfig.config['playlist']['allowed_minutes']
+        self.users = Users(allowed_minutes=AppConfig.config['playlist']['allowed_minutes'])
         # get a spotify client
         self.sp = SpotifyClient.get_client()
 
