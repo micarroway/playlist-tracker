@@ -22,13 +22,13 @@ class Users(dict):
         string_value = linesep
         for user in sorted_users:
             string_value += str(user) + linesep
-        string_value += '--------------------------------------------------------' + linesep
+        string_value += '  ' + ('-' * 66) + linesep
         total_minutes = self.get_total_minutes()
-        string_value += '%s songs, %s mins, %s Avg Popularity' % (
-            self.num_tracks,
-            round(total_minutes, 2),
-            round(self.get_average_popularity(), 2)
-        ) + linesep
+        string_value += '%s%s songs, %s mins, %s Avg Popularity' % (
+            (' ' * 22),
+            str(self.num_tracks).rjust(3),
+            str(round(total_minutes, 2)).rjust(7),
+            str(round(self.get_average_popularity(), 2)).rjust(5)) + linesep
 
         limit = round(self.allowed_minutes - total_minutes)
         per_person_time_limit = self.allowed_minutes / len(sorted_users)
@@ -36,22 +36,26 @@ class Users(dict):
         string_value += linesep
 
         if total_minutes > self.allowed_minutes:
-            string_value += 'The total time is over the limit by %s mins.' % (limit * -1) + linesep
+            string_value += '      The total time is over the limit by %s mins.' % (limit * -1) + linesep
         elif total_minutes == self.allowed_minutes:
-            string_value += 'Good job, guys.' + linesep
+            string_value += '      The total time is at the limit.' + linesep
         else:
-            string_value += 'The total time is under the limit by %s mins.' % limit + linesep
+            string_value += '      The total time is under the limit by %s mins.' % limit + linesep
 
         for user in sorted_users:
             user_time = float(user.get_total_minutes())
             if user_time > per_person_time_limit:
                 overage = str(round(user_time - per_person_time_limit))
-                string_value += '%s is over the limit by %s mins.' % (user.display_name,
-                                                                      overage) + linesep
+                string_value += '%s is %s the limit by %s mins.' % (user.display_name.rjust(20),
+                                                                    'over'.rjust(5),
+                                                                    overage.rjust(3)) + linesep
             if user_time < per_person_time_limit:
-                under = str(round(user_time - per_person_time_limit) * -1)
-                string_value += '%s is under the limit by %s mins.' % (user.display_name,
-                                                                       under) + linesep
+                remainder = str(round(user_time - per_person_time_limit) * -1)
+                string_value += '%s is %s the limit by %s mins.' % (user.display_name.rjust(20),
+                                                                    'under'.rjust(5),
+                                                                    remainder.rjust(3)) + linesep
+            if user_time == per_person_time_limit:
+                string_value +=  '%s is at the limit.' % (user.display_name.rjust(20))
 
         return string_value + linesep
 

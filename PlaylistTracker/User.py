@@ -18,10 +18,10 @@ class User:
         return repr((self.display_name, self.song_count, self.total_seconds, self.get_average_popularity()))
 
     def __str__(self):
-        return '%s: %s songs, %s mins, %s Avg Popularity' % (self.display_name,
-                                                             self.song_count,
-                                                             round(self.get_total_minutes(), 2),
-                                                             round(self.get_average_popularity(), 2))
+        return '%s: %s songs, %s mins, %s Avg Popularity' % (self.display_name.rjust(20),
+                                                             str(self.song_count).rjust(3),
+                                                             str(round(self.get_total_minutes(), 2)).rjust(7),
+                                                             str(round(self.get_average_popularity(), 2)).rjust(5))
 
     def get_total_minutes(self):
         return self.total_seconds / 60000
