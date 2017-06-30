@@ -4,6 +4,8 @@ from PlaylistTracker.User import User
 
 
 class Users(dict):
+    __slots__ = ['allowed_minutes', 'num_tracks']
+
     def __init__(self):
         self.allowed_minutes = 0
         self.num_tracks = 0

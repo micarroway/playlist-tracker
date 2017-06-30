@@ -7,9 +7,10 @@ with open('spotify_config.json') as config:
 
 
 class User:
-
     token = util.prompt_for_user_token(**config['oath'])
     sp = spotipy.Spotify(auth=token)
+
+    __slots__ = ['username', 'popularity', 'song_count', 'total_seconds', '_spotify_profile', 'display_name']
 
     def __init__(self, username):
         self.username = username

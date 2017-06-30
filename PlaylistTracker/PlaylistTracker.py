@@ -12,6 +12,8 @@ from PlaylistTracker.AppConfig import AppConfig
 
 
 class PlaylistTracker:
+    __slots__ = ['users', 'sp']
+
     def __init__(self):
         self.users = Users()
         self.users.allowed_minutes = AppConfig.config['playlist']['allowed_minutes']
