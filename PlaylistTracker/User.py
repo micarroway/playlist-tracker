@@ -1,14 +1,8 @@
-import json
-import spotipy
-import spotipy.util as util
-
-with open('app_config.json') as config:
-    config = json.load(config)
+from PlaylistTracker.SpotifyClient import SpotifyClient
 
 
 class User:
-    token = util.prompt_for_user_token(**config['oath'])
-    sp = spotipy.Spotify(auth=token)
+    sp = SpotifyClient.get_client()
 
     __slots__ = ['username', 'popularity', 'song_count', 'total_seconds', '_spotify_profile', 'display_name']
 
