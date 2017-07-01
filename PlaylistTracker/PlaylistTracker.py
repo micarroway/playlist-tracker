@@ -50,7 +50,7 @@ class PlaylistTracker:
         time_allowed = []
 
         for user in self.users.values():
-            user_names.append(user.username)
+            user_names.append(user.display_name)
 
         for user in self.users.values():
             users_time.append(user.total_seconds / 60000)
@@ -61,11 +61,20 @@ class PlaylistTracker:
         bars2 = plt.bar(index, time_allowed, bar_width, alpha=opacity, color='k',
                         bottom=users_time)
 
+        #some hardcoded colors for the masses
+        bars1[0].set_color('#0276FD')
+        bars1[2].set_color('#ff69b4')
+        bars1[3].set_color('#4B0082')
+        bars1[4].set_color('#7CFC00')
+        bars1[5].set_color('#2F4F2F')
+        bars1[6].set_color('#05B8CC')
+        #end colors
+        
         plt.xlabel('Users')
         plt.ylabel('Time(minutes)')
         plt.title('Chicago Playlist: Total Time by User')
         plt.tight_layout()
-        plt.xticks(index, user_names)
+        plt.xticks(index, user_names, rotation = "vertical")
 
         plt.show()
         # Visualization end
