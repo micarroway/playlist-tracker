@@ -14,7 +14,7 @@ python main.py
 
 ### Test
 ```shell
-python -m unittest
+python -m unittest discover
 ```
 
 ### Build

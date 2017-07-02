@@ -29,7 +29,7 @@ class User:
         return self.display_name
 
     def get_total_minutes(self):
-        return self.total_seconds / 60000
+        return float(self.total_seconds) / 60000
 
     def add_track(self, track):
         self.popularity += track['popularity']
@@ -39,4 +39,4 @@ class User:
     def get_average_popularity(self):
         if not self.song_count:
             return 0
-        return self.popularity / self.song_count
+        return float(self.popularity) / self.song_count
