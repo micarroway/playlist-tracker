@@ -21,6 +21,8 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.get_average_popularity(), 15)
         self.user.add_track({'popularity': 30, 'duration_ms': 30000})
         self.assertEqual(self.user.get_average_popularity(), 20)
+        self.user.add_track({'popularity': 5, 'duration_ms': 30000})
+        self.assertEqual(self.user.get_average_popularity(), 16.25)
 
 
 if __name__ == '__main__':

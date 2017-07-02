@@ -1,10 +1,17 @@
 import spotipy
+from  spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
 
-from PlaylistTracker.AppConfig import AppConfig
+from .AppConfig import AppConfig
 
 
 class SpotifyClient:
     @staticmethod
     def get_client():
-        return spotipy.Spotify(auth=util.prompt_for_user_token(**AppConfig.config['oath']))
+        oath = AppConfig.config['oath']
+        return spotipy.Spotify(
+            client_credentials_manager=SpotifyClientCredentials(
+                client_id=oath['client_id'],
+                client_secret=oath['client_secret']
+            )
+        )

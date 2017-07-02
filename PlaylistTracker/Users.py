@@ -1,6 +1,6 @@
 from os import linesep
 
-from PlaylistTracker.User import User
+from .User import User
 
 
 class Users(dict):
@@ -18,7 +18,7 @@ class Users(dict):
         dict.__setitem__(self, key, value)
 
     def __str__(self):
-        sorted_users = sorted(self.values(), key=lambda u: str.lower(u.display_name))
+        sorted_users = sorted(self.values(), key=lambda u: u.display_name.lower())
         string_value = linesep
         for user in sorted_users:
             string_value += str(user) + linesep
@@ -65,7 +65,7 @@ class Users(dict):
     def get_average_popularity(self):
         if not self.num_tracks:
             return 0
-        return sum(user.popularity for user in self.values()) / self.num_tracks
+        return float(sum(user.popularity for user in self.values())) / self.num_tracks
 
     def add_track(self, user_id, track):
         if user_id not in self:
