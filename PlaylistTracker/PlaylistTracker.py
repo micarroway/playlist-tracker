@@ -50,16 +50,6 @@ class PlaylistTracker:
         time_allowed = [(self.users.allowed_minutes / n_users) - (user.total_seconds / 60000)
                         for user in self.users.values()]
 
-<<<<<<< Updated upstream
-        for user in self.users.values():
-            user_names.append(user.display_name)
-
-        for user in self.users.values():
-            users_time.append(user.total_seconds / 60000)
-            time_allowed.append((self.users.allowed_minutes / n_users) - (user.total_seconds / 60000))
-=======
->>>>>>> Stashed changes
-
         bars1 = plt.bar(index, users_time, bar_width, alpha=opacity, color='g')
 
         bars2 = plt.bar(index, time_allowed, bar_width, alpha=opacity, color='k',
