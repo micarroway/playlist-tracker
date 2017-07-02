@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/jcatoe/playlist-tracker.svg?branch=master)](https://travis-ci.org/jcatoe/playlist-tracker)
+[![Coverage Status](https://coveralls.io/repos/github/jcatoe/playlist-tracker/badge.svg?branch=master)](https://coveralls.io/github/jcatoe/playlist-tracker?branch=master)
 
 # Playlist Tracker
 
