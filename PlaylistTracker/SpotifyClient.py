@@ -1,6 +1,5 @@
 import spotipy
-from  spotipy.oauth2 import SpotifyClientCredentials
-import spotipy.util as util
+from spotipy.oauth2 import SpotifyClientCredentials
 
 from .AppConfig import AppConfig
 
