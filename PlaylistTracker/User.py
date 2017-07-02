@@ -25,6 +25,9 @@ class User:
                                                              str(round(self.get_total_minutes(), 2)).rjust(7),
                                                              str(round(self.get_average_popularity(), 2)).rjust(5))
 
+    def __getitem__(self):
+        return self.display_name
+
     def get_total_minutes(self):
         return self.total_seconds / 60000
 

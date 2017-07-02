@@ -45,16 +45,20 @@ class PlaylistTracker:
         bar_width = 0.5
         opacity = .35
 
-        user_names = []
-        users_time = []  # total time in min for each users' song additions
-        time_allowed = []
+        user_names = [user.display_name for user in self.users.values()]
+        users_time = [user.total_seconds / 60000 for user in self.users.values()]
+        time_allowed = [(self.users.allowed_minutes / n_users) - (user.total_seconds / 60000)
+                        for user in self.users.values()]
 
+<<<<<<< Updated upstream
         for user in self.users.values():
             user_names.append(user.display_name)
 
         for user in self.users.values():
             users_time.append(user.total_seconds / 60000)
             time_allowed.append((self.users.allowed_minutes / n_users) - (user.total_seconds / 60000))
+=======
+>>>>>>> Stashed changes
 
         bars1 = plt.bar(index, users_time, bar_width, alpha=opacity, color='g')
 
