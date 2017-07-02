@@ -4,15 +4,20 @@
 
 ### Setup
 ```shell
-pip3 install -r requirements.txt 
+pip install -r requirements.txt 
 ```
 
 ### Run
 ```shell
-python3 main.py
+python main.py
 ```
 
 ### Test
 ```shell
-python3 -m unittest
+python -m unittest
+```
+
+### Build
+```shell
+python setup.py sdist
 ```
