@@ -4,11 +4,10 @@ Created on Thu Jun 22 09:01:41 2017
 
 @author: JCatoe
 """
-from PlaylistTracker.SpotifyClient import SpotifyClient
-from PlaylistTracker.User import User
-from PlaylistTracker.Users import Users
-
-from PlaylistTracker.AppConfig import AppConfig
+from .SpotifyClient import SpotifyClient
+from .User import User
+from .Users import Users
+from .AppConfig import AppConfig
 
 import numpy as np
 import matplotlib.pyplot as plt

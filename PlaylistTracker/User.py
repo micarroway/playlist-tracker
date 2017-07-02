@@ -1,4 +1,4 @@
-from PlaylistTracker.SpotifyClient import SpotifyClient
+from .SpotifyClient import SpotifyClient
 
 
 class User:
