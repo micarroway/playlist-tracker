@@ -4,11 +4,10 @@ from .User import User
 
 
 class Users(dict):
-    __slots__ = ['allowed_minutes', 'num_tracks']
+    __slots__ = ['allowed_minutes']
 
     def __init__(self, **kwargs):
         self.allowed_minutes = kwargs['allowed_minutes'] if 'allowed_minutes' in kwargs.keys() else 0
-        self.num_tracks = 0
         dict.__init__(self)
 
     def __setitem__(self, key, value):
@@ -26,7 +25,7 @@ class Users(dict):
         total_minutes = self.get_total_minutes()
         string_value += '%s%s songs, %s mins, %s Avg Popularity' % (
             (' ' * 22),
-            str(self.num_tracks).rjust(3),
+            str(self.get_num_tracks()).rjust(3),
             str(round(total_minutes, 2)).rjust(7),
             str(round(self.get_average_popularity(), 2)).rjust(5)) + linesep
 
@@ -63,13 +62,16 @@ class Users(dict):
         return sum(user.get_total_minutes() for user in self.values())
 
     def get_average_popularity(self):
-        if not self.num_tracks:
+        num_tracks = self.get_num_tracks()
+        if not num_tracks:
             return 0
-        return float(sum(user.popularity for user in self.values())) / self.num_tracks
+        return float(sum(user.popularity for user in self.values())) / num_tracks
 
     def add_track(self, user_id, track):
         if user_id not in self:
             raise IndexError
 
-        self.num_tracks += 1
         self[user_id].add_track(track)
+
+    def get_num_tracks(self):
+        return sum(user.num_tracks for user in self.values())

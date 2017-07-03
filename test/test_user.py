@@ -13,9 +13,9 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.get_total_minutes(), 1.5)
 
     def test_add_track(self):
-        self.assertEqual(self.user.song_count, 2)
+        self.assertEqual(self.user.num_tracks, 2)
         self.user.add_track({'popularity': 15, 'duration_ms': 30000, 'artists': [{'id': '2e898fil1F5umrc2LBtV93'}]})
-        self.assertEqual(self.user.song_count, 3)
+        self.assertEqual(self.user.num_tracks, 3)
 
     def test_get_average_popularity(self):
         self.assertEqual(self.user.get_average_popularity(), 15)
