@@ -40,9 +40,6 @@ class PlaylistTracker:
         # get the playlist
         playlist = self.sp.user_playlist(self.user_id, self.playlist_id, fields='tracks,next')
 
-        if 'tracks' not in playlist:
-            return self.users
-
         # extract first "chunk" of tracks and all subsequent "chunks"
         tracks = playlist['tracks']
         self.add_tracks_to_users(tracks['items'])
