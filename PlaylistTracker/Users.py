@@ -42,7 +42,7 @@ class Users(dict):
             string_value += '      The total time is under the limit by %s mins.' % limit + linesep
 
         for user in sorted_users:
-            user_time = float(user.get_total_minutes())
+            user_time = user.get_total_minutes()
             if user_time > per_person_time_limit:
                 overage = str(round(user_time - per_person_time_limit))
                 string_value += '%s is %s the limit by %s mins.' % (user.display_name.rjust(20),
@@ -65,7 +65,7 @@ class Users(dict):
         num_tracks = self.get_num_tracks()
         if not num_tracks:
             return 0
-        return float(sum(user.popularity for user in self.values())) / num_tracks
+        return sum(user.popularity for user in self.values()) / num_tracks
 
     def add_track(self, user_id, track):
         if user_id not in self:
