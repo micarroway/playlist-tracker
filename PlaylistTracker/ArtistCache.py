@@ -1,6 +1,7 @@
 from .SpotifyClient import SpotifyClient
 import pickle
 import os.path
+from spotipy.client import SpotifyException
 
 
 """
@@ -41,7 +42,11 @@ class ArtistCache:
 
         # if artist is not in the cache, lookup via spotify api
         if artist_id not in self._cache:
-            self.set_artist(self.sp.artist(artist_id))
+            try:
+                artist = self.sp.artist(artist_id)
+            except SpotifyException:
+                raise
+            self.set_artist(artist)
             if self.autosave_to_disk:
                 self.save_to_disk()
             # we loaded this artist from spotify, so set this to False
@@ -55,7 +60,11 @@ class ArtistCache:
         :param artist: spotify dict returned from their api
         :return: None
         """
-        self._cache[artist['id']] = artist
+        if isinstance(artist, dict) and 'id' in artist:
+            self._cache[artist['id']] = artist
+        else:
+            print("JUROBN")
+            print(artist)
 
     def save_to_disk(self):
         """
