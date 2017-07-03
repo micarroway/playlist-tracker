@@ -1,17 +1,21 @@
-from .SpotifyClient import SpotifyClient
-import pickle
 import os.path
+import pickle
+from collections import UserDict
+
 from spotipy.client import SpotifyException
 
+from .SpotifyClient import SpotifyClient
 
 """
 A simple dictionary wrapped around automatic pickling
 """
 
-class ArtistCache:
-    __slots__ = ['autoload_from_disk', 'autosave_to_disk', '_cache', '_dumpFilePath']
+
+class ArtistCache(UserDict):
+    __slots__ = ['autoload_from_disk', 'autosave_to_disk', '_cache_directory', '_cache_file_name', '_cache_file_path']
     # static spotipy client unique to this class
     sp = SpotifyClient.get_client()
+    CACHE_DIRECTORY_NAME = 'artist_cache'
 
     def __init__(self, autoload_from_disk=True, autosave_to_disk=True):
         """
@@ -22,15 +26,18 @@ class ArtistCache:
         self.autoload_from_disk = autoload_from_disk
         self.autosave_to_disk = autosave_to_disk
         # The location of the pickle save file
-        self._dumpFilePath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'artistCache._cache')
+        self._cache_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), ArtistCache.CACHE_DIRECTORY_NAME)
+        self._cache_file_name = str(pickle.HIGHEST_PROTOCOL) + ".dat"
+        self._cache_file_path = os.path.join(self._cache_directory, self._cache_file_name)
         # load the pickle dump if it exists
-        if self.autoload_from_disk and os.path.exists(self._dumpFilePath):
+        initial_data = {}
+        if self.autoload_from_disk:
             try:
-                self.load_from_disk()
+                initial_data = self.load_from_disk()
             except TypeError as e:
-                print(e.__class__)
-        else:
-            self._cache = {}
+                print("Error loading artist cache from disk " + str(e))
+
+        UserDict.__init__(self, initial_data=initial_data)
 
     def get_artist(self, artist_id):
         """
@@ -41,7 +48,7 @@ class ArtistCache:
         loaded_from_cache = True
 
         # if artist is not in the cache, lookup via spotify api
-        if artist_id not in self._cache:
+        if artist_id not in self:
             try:
                 artist = self.sp.artist(artist_id)
             except SpotifyException:
@@ -52,7 +59,7 @@ class ArtistCache:
             # we loaded this artist from spotify, so set this to False
             loaded_from_cache = False
 
-        return self._cache[artist_id], loaded_from_cache
+        return self[artist_id], loaded_from_cache
 
     def set_artist(self, artist):
         """
@@ -60,24 +67,24 @@ class ArtistCache:
         :param artist: spotify dict returned from their api
         :return: None
         """
-        if isinstance(artist, dict) and 'id' in artist:
-            self._cache[artist['id']] = artist
-        else:
-            print("JUROBN")
-            print(artist)
+        self[artist['id']] = artist
 
     def save_to_disk(self):
         """
         Saves cache to disk
         :return: None
         """
-        with open(self._dumpFilePath, 'wb') as handle:
-            pickle.dump(self._cache, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        if not os.path.exists(self._cache_directory):
+            os.makedirs(self._cache_directory)
+        with open(self._cache_file_path, 'wb') as handle:
+            pickle.dump(self.data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def load_from_disk(self):
         """
         Loads cache from disk
         :return: None
         """
-        with open(self._dumpFilePath, 'rb') as handle:
-            self._cache = pickle.load(handle)
+        if not os.path.exists(self._cache_file_path):
+            return {}
+        with open(self._cache_file_path, 'rb') as handle:
+            return pickle.load(handle)

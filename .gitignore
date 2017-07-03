@@ -1,5 +1,5 @@
 __pycache__
 *.pyc
 dist
-artistCache._cache
+artist_cache
 .idea
