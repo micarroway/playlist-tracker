@@ -17,11 +17,17 @@ class PlaylistTracker:
     __slots__ = ['users', 'sp']
 
     def __init__(self):
+        # create a Users class with a limit on how much total time they all can cumulatively have
         self.users = Users(allowed_minutes=AppConfig.config['playlist']['allowed_minutes'])
-        # get a spotify client
+        # get a spotify client. Notice this is not static but unique to this instance
+        # this is because we are assigning it to self
         self.sp = SpotifyClient.get_client()
 
     def track_playlist(self):
+        """
+        Computes and presents multiple statistics about our playlist
+        :return: None
+        """
         # get the playlist
         playlist = self.sp.user_playlist(AppConfig.config['playlist']['userID'],
                                          AppConfig.config['playlist']['playlistID'],
@@ -73,6 +79,11 @@ class PlaylistTracker:
         # Visualization end
 
     def add_tracks_to_users(self, tracks):
+        """
+        Adds each track to our Users object
+        :param tracks: list of tracks from Spotify api
+        :return: None
+        """
         for track in tracks:
             user_id = track['added_by']['id']
             if user_id not in self.users:
