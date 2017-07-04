@@ -1,6 +1,5 @@
 import os.path
 import pickle
-from collections import UserDict
 
 from spotipy.client import SpotifyException
 
@@ -11,7 +10,7 @@ A simple dictionary wrapped around automatic pickling
 """
 
 
-class ArtistCache(UserDict):
+class ArtistCache(dict):
     __slots__ = ['autoload_from_disk', 'autosave_to_disk', '_cache_directory', '_cache_file_name', '_cache_file_path']
     # static spotipy client unique to this class
     sp = SpotifyClient.get_client()
@@ -37,7 +36,7 @@ class ArtistCache(UserDict):
             except TypeError as e:
                 print("Error loading artist cache from disk " + str(e))
 
-        UserDict.__init__(self, initial_data=initial_data)
+        dict.__init__(self, initial_data)
 
     def get_artist(self, artist_id):
         """
@@ -77,7 +76,7 @@ class ArtistCache(UserDict):
         if not os.path.exists(self._cache_directory):
             os.makedirs(self._cache_directory)
         with open(self._cache_file_path, 'wb') as handle:
-            pickle.dump(self.data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def load_from_disk(self):
         """

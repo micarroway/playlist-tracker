@@ -1,9 +1,14 @@
 language: python
-python:
-  - "3.6"
+env:
+matrix:
+  include:
+  - python: "2.7"
+    env: REQUIREMENTS=requirements27.txt
+  - python: "3.6"
+    env: REQUIREMENTS=requirements.txt
  
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install: pip install -r $REQUIREMENTS
 
 # command to run tests
 script: python -m unittest discover

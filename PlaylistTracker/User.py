@@ -32,7 +32,7 @@ class User:
                                                              str(round(self.get_average_popularity(), 2)).rjust(5))
 
     def get_total_minutes(self):
-        return self.total_seconds / 60000
+        return float(self.total_seconds) / 60000
 
     def add_genre_by_artist_id(self, artist_id):
         artist, loaded_from_cache = self.artistCache.get_artist(artist_id)
@@ -54,4 +54,4 @@ class User:
     def get_average_popularity(self):
         if not self.num_tracks:
             return 0
-        return self.popularity / self.num_tracks
+        return float(self.popularity) / self.num_tracks

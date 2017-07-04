@@ -65,7 +65,7 @@ class Users(dict):
         num_tracks = self.get_num_tracks()
         if not num_tracks:
             return 0
-        return sum(user.popularity for user in self.values()) / num_tracks
+        return float(sum(user.popularity for user in self.values())) / num_tracks
 
     def add_track(self, user_id, track):
         if user_id not in self:
